@@ -100,7 +100,6 @@ def fu(message):
     else:
         t.send_message(message.chat.id, "Недействительная ссылка. Попробуй ещё раз")
 
-'''
 @t.message_handler(func=x) 
 def fu1(message):          
     g = requests.get("http://127.0.0.1:8000/us").json()
@@ -114,7 +113,6 @@ def fu1(message):
         th.start()        
     else:
         t.send_message(message.chat.id, "Недействительное число. Попробуй ещё раз")
-'''
 
 @t.message_handler(func=z)             
 def fu2(message):
@@ -168,6 +166,7 @@ def fu0(message):
     r = json.load(open("Гавно.json","r"))
     r[str(message.from_user.id)]["v"] = 3
     t.send_message(message.chat.id, "Давай")
+
 def s1(message):
     r = json.load(open("Гавно.json","r"))
     return r[str(message.from_user.id)]["v"] == 3
