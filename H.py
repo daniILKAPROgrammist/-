@@ -1,15 +1,16 @@
 from telebot import TeleBot, types
 import requests
-from datetime import datetime, date, time, timedelta
+from datetime import datetime, timedelta
 import json
-from pydantic import BaseModel
 from time import sleep
 from threading import Thread
 import random
 from email.mime.multipart import MIMEMultipart
-from email.mime.image import MIMEImage
+#from email.mime.image import MIMEImage
 from email.mime.text import MIMEText
 import smtplib
+from os import getenv
+#from dotenv import load_dotenv
 
 t = TeleBot("6370938616:AAGKNWr66eB3e36e7a2CI90LAQmXhpfGB-o")
 
@@ -17,7 +18,7 @@ t = TeleBot("6370938616:AAGKNWr66eB3e36e7a2CI90LAQmXhpfGB-o")
 def h(message):
     r = json.load(open("Гавно.json","r"))
     if str(message.from_user.id) not in r:
-        r[str(message.from_user.id)] = {"v": 0, "gyg": "", "f":False}
+        r[str(message.from_user.id)] = {"v": 0, "gyg": "", "f":False, "c" : 0}
     t.send_message(message.chat.id, "Введи имя пользователя и пароль через пробел")
     r[str(message.from_user.id)]["v"] = 1
     json.dump(r, open("Гавно.json", "w"))
@@ -32,7 +33,6 @@ def b(message):
     g = requests.get("http://127.0.0.1:8000/us").json()
     r = json.load(open("Гавно.json","r"))
     l = message.text.split()
-    print(g)
     if len(l) != 2:
         t.send_message(message.chat.id, "Неверный формат сообщения. Введи имя пользователя и пароль через пробел. Для повторной повытки - /start")
     elif l[0] in g and g[l[0]]["gam"]:
@@ -50,12 +50,15 @@ def b(message):
             msg.attach(MIMEText(v, 'plain')) 
             server = smtplib.SMTP('smtp.gmail.com: 587')
             server.starttls()
+            #load_dotenv()
+            getenv("Gig")
             server.login("terafirrmatebliceout@gmail.com", "ldtg mzmo ekvy vvnn".replace("\xa0", " "))
             server.sendmail(g[r[str(message.from_user.id)]["gyg"]]["gm"], "terafirrmatebliceout@gmail.com", msg.as_string())
             server.quit()
             r[str(message.from_user.id)]["с"] = v
             r[str(message.from_user.id)]["v"] = 2
             t.send_message(message.chat.id, "Теперь введи код")
+            t.register_next_step_handler(message, br)
         else:
             g[r[str(message.from_user.id)]["gyg"]]["gam"] = True
             r[str(message.from_user.id)]["f"] = True
@@ -78,14 +81,14 @@ def br(message):
         g[r[str(message.from_user.id)]["gyg"]]["gam"] = True
         r[str(message.from_user.id)]["f"] = True
         json.dump(r, open("Гавно.json", "w"))
-        requests.put("http://127.0.0.1:8000/us", params=g)
+        requests.put("http://127.0.0.1:8000/us", json=g)
         t.send_message(message.chat.id, "Ты зашёл в аккаунт")
     else:
         t.send_message(message.chat.id, "Повтори попытку введения")
 
 def n(message):
     r = json.load(open("Гавно.json","r"))
-    if r[str(message.from_user.id)]["gyg"]: #r[str(message.from_user.id)]["f"]:
+    if r[str(message.from_user.id)]["f"]:
         return True
     else:
         t.send_message(message.from_user.id, "А хрен тебе")
@@ -97,8 +100,8 @@ def kl(message):
     t.register_next_step_handler(message, kh)
 
 @t.message_handler(type=["text"])  
-def kh(message): 
-    if "@gmail.com" in message.text:
+def kh(message):     
+    if "@gmail.com" in message.text or "@mail.ru" in message.text or "@yandex.com" in message.text:
         r = json.load(open("Гавно.json","r"))
         g = requests.get(f"http://127.0.0.1:8000/us/?id={r[str(message.from_user.id)]['gyg']}").json()
         g["gm"] = message.text
@@ -111,8 +114,7 @@ def kh(message):
 def v(message):
     r = json.load(open("Гавно.json","r"))
     g = requests.get(f"http://127.0.0.1:8000/us/?id={r[str(message.from_user.id)]['gyg']}").json()
-    print(g)
-    if r[str(message.from_user.id)]["gyg"] == "bz":
+    if "tam" not in g[r[str(message.from_user.id)]['gyg']]:
         mark = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
         bt = types.KeyboardButton("Ввести ссылку")
         bt1 = types.KeyboardButton("Добавить кожаного")
@@ -122,7 +124,7 @@ def v(message):
             bt2 = types.KeyboardButton("Отменить данные")
             mark.add(bt1, bt2)   
         json.dump(r, open("Гавно.json", "w"))
-    elif r[str(message.from_user.id)]["gyg"] == "Кожаный1":
+    elif "tam" in g[r[str(message.from_user.id)]['gyg']]:
         mark = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True, one_time_keyboard=True)
         bt = types.KeyboardButton("Список фанатов")
         bt1 = types.KeyboardButton("Список проектов")
@@ -144,21 +146,26 @@ def k(message):
             t.send_message(message.from_user.id, "Вводи")
             t.register_next_step_handler(message, fu2)
         if message.text == "Список фанатов":    
-            t.register_next_step_handler(message, fu3)
+            fu3(message)
         if message.text == "Список проектов":    
-            t.register_next_step_handler(message, fu4)
+            fu4(message)
         if message.text == "Список кожаных":    
-            t.register_next_step_handler(message, fu5)
+            fu5(message)
         if message.text == "Добавить кожаного":    
-            t.register_next_step_handler(message, fu6)
+            fu6(message)
         
 @t.message_handler(type=["text"]) 
 def fu(message):       
     r = json.load(open("Гавно.json","r"))
     g = requests.get(f"http://127.0.0.1:8000/us/?id={r[str(message.from_user.id)]['gyg']}").json()
+    if "tam" in g:
+        t.send_message(message.chat.id, "Стоять кавбой")
+        return
     if message.text.startswith("https://"):
         g["url"] = message.text
-        requests.put(f"http://127.0.0.1:8000/us/?id={r[str(message.from_user.id)]['gyg']}", json=g)
+        print(g)
+        k = requests.put(f"http://127.0.0.1:8000/us/?id={r[str(message.from_user.id)]['gyg']}", json=g)
+        print(k.text)
         t.send_message(message.chat.id, "Ссылка добавлена")
     else:
         t.send_message(message.chat.id, "Недействительная ссылка")
@@ -166,14 +173,20 @@ def fu(message):
 @t.message_handler(type=["text"]) 
 def fu1(message):          
     r = json.load(open("Гавно.json","r"))
-    f = requests.get(f"http://127.0.0.1:8000/us").json()
-    if f[r[str(message.from_user.id)]['gyg']]["url"] and f[r[str(message.from_user.id)]['gyg']]["h"]:
+    g = requests.get(f"http://127.0.0.1:8000/us").json()
+    if "tam" in g[r[str(message.from_user.id)]['gyg']]:
+        t.send_message(message.chat.id, "Стоять кавбой")
+        return
+    if g[r[str(message.from_user.id)]['gyg']]["url"] and g[r[str(message.from_user.id)]['gyg']]["h"]:
         if message.text.isdigit() and int(message.text) > 0 and int(message.text) <= 48:
-            f[r[str(message.from_user.id)]['gyg']]["t"] = (datetime.now() + timedelta(hours=int(message.text))).strftime("%Y-%m-%d %H:%M:%S")
-            f[f[r[str(message.from_user.id)]['gyg']]["h"]]["h"].append(f[r[str(message.from_user.id)]["gyg"]]["url"])
-            requests.put(f"http://127.0.0.1:8000/us", json=f)
+            g[r[str(message.from_user.id)]['gyg']]["t"] = (datetime.now() + timedelta(hours=int(message.text))).strftime("%Y-%m-%d %H:%M:%S")
+            if g[r[str(message.from_user.id)]["gyg"]]["url"] not in g[g[r[str(message.from_user.id)]['gyg']]["h"]]["h"]:
+                g[g[r[str(message.from_user.id)]['gyg']]["h"]]["h"].append(g[r[str(message.from_user.id)]["gyg"]]["url"])
+            else:
+                t.send_message(message.chat.id, "Последняя введённая ссылка была отпрвлена раннее")
+            requests.put(f"http://127.0.0.1:8000/us", json=g)
             t.send_message(message.chat.id, f"Через {message.text} часов я потревожу кожаного")
-            th = Thread(target=l, args=(message,))
+            th = Thread(target=le, args=(message,))
             th.start()        
         else:
             t.send_message(message.chat.id, "Недействительное число")
@@ -184,52 +197,57 @@ def fu1(message):
 def fu2(message):
     r = json.load(open("Гавно.json","r"))
     g = requests.get(f"http://127.0.0.1:8000/us/?id={r[str(message.from_user.id)]['gyg']}").json()
+    if "tam" in g:
+        t.send_message(message.chat.id, "Стоять кавбой")  
+        return
     g["t"] = False
     g["url"] = ""
     requests.put(f"http://127.0.0.1:8000/us/?id={r[str(message.from_user.id)]['gyg']}", json=g)
     t.send_message(message.chat.id, "Ссылка и часы сброшены")
     json.dump(r, open("Гавно.json", "w"))
-
-@t.message_handler(type=["text"])             
+            
 def fu3(message):
     r = json.load(open("Гавно.json","r"))
     g = requests.get(f"http://127.0.0.1:8000/us/?id={r[str(message.from_user.id)]['gyg']}").json()
-    if "li" in g:
-        h = requests.get(f"http://0.0.0.0:8000/h/?id={r[str(message.from_user.id)]['gyg']}")
-        u = h["gyg"]["li"]
-        t.send_message(message.chat.id, "\n".join(u))  
-    else:
-        t.send_message(message.chat.id, "Ты не кожаный")
-
-@t.message_handler(type=["text"])             
+    h = requests.get(f"http://0.0.0.0:8000/h/?id={r[str(message.from_user.id)]['gyg']}").json()
+    if "tam" in g:
+        t.send_message(message.chat.id, "Фанаты:\n\n" + "\n".join(h["li"]))  
+        return
+    t.send_message(message.chat.id, "Ты не кожаный")
+          
 def fu4(message):
     r = json.load(open("Гавно.json","r"))
-    g = requests.get(f"http://127.0.0.1:8000/us/?id={r[str(message.from_user.id)]['gyg']}")
-    if "li" in g:
-        t.send_message(g["h"])
-    else:
-        t.send_message(message.chat.id, "Ты не кожаный")
+    g = requests.get(f"http://127.0.0.1:8000/us/?id={r[str(message.from_user.id)]['gyg']}").json()
+    if "tam" in g:
+        t.send_message(message.chat.id, "Ссылки:\n\n" + "\n".join(g["h"]))
+        return
+    t.send_message(message.chat.id, "Ты не кожаный")
 
-@t.message_handler(type=["text"])
 def fu5(message):
     r = json.load(open("Гавно.json","r"))
-    h = requests.get("http://0.0.0.0:8000/h")
-    t.send_message(message.chat.id, "Список кожаных:")
+    h = requests.get("http://0.0.0.0:8000/h").json()
+    if r[str(message.from_user.id)]["gyg"] not in h["Кожаные"]:
+        t.send_message(message.chat.id, "Ты не кожаный")
+        return
     u = list()
     for k in h["Кожаные"]:
-        u.append(k["nam"])
-    t.send_message(message.chat.id, "\n".join(u))
+        u.append(f"{k}. " + h["Кожаные"][k]["nam"])
+    t.send_message(message.chat.id, "Список кожаных:\n\n" + "\n".join(u))
 
-@t.message_handler(type=["text"])
 def fu6(message):
     r = json.load(open("Гавно.json","r"))
-    h = requests.get("http://0.0.0.0:8000/h")
+    h = requests.get("http://0.0.0.0:8000/h").json()
+    if r[str(message.from_user.id)]["gyg"] in h["Кожаные"]:
+        t.send_message(message.chat.id, "Стоять кавбой")
+        return
     r[str(message.from_user.id)]["v"] = 3
-    t.send_message(message.chat.id, "Тут можно выбрать желаемого кожаного для твоих сдач. Вот список из них. Введи № желаемого")
+    json.dump(r, open("Гавно.json", "w"))
     u = list()
     for k in h["Кожаные"]:
-        u.append(k["nam"])
+        u.append(f"{k}." + h["Кожаные"][k]["nam"])
+    t.send_message(message.chat.id, "Тут можно выбрать желаемого кожаного для твоих сдач. Вот список из них. Введи № желаемого")
     t.send_message(message.chat.id, "\n".join(u))
+    t.register_next_step_handler(message, j)
     
 def s(message):
     r = json.load(open("Гавно.json","r"))
@@ -248,24 +266,29 @@ def j(message):
             requests.put("http://127.0.0.1:8000/h", json=h)
 
 #Уведомление
-def l(message):
+def le(message):
     r = json.load(open("Гавно.json","r"))
     g = requests.get("http://127.0.0.1:8000/us").json()
-    t = datetime.strptime(g[r[str(message.from_user.id)]["gyg"]]["t"], "%Y-%m-%d %H:%M:%S")
+    if "tam" in g[r[str(message.from_user.id)]['gyg']]:
+        return
+    if g[r[str(message.from_user.id)]["gyg"]]["t"] != False:
+        u = datetime.strptime(g[r[str(message.from_user.id)]["gyg"]]["t"], "%Y-%m-%d %H:%M:%S")
+    else:
+        return
     while True:
         f = datetime.strptime(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S")
-        if t != False and f < t:
-            print("l")
-            sleep(120)
-        elif t != False:    
+        if f < u:
+            sleep(5)
+        else:    
             for y in r:
-                if r[y]["gyg"] == "Кожаный1":
-                    t.send_message(y, "Кожаный,, ты потревожен. Новый url - " + r["bz"]["url"])
-                elif r[y]["gyg"] == "bz":
-                    g[r[y]["gyg"]]["url"] = ""
-                    g[r[y]["gyg"]]["t"] = False
-                    t.send_message(message.chat.id, "Кожаный успешно потревожен")
-                break
+                if r[y]["gyg"] == g[r[str(message.from_user.id)]["gyg"]]["h"]:
+                    t.send_message(y, "Кожаный,, ты потревожен. Новый url - " + g[r[str(message.from_user.id)]["gyg"]]["url"])
+                    break                    
+            g[r[str(message.from_user.id)]["gyg"]]["url"] = ""
+            g[r[str(message.from_user.id)]["gyg"]]["t"] = False
+            t.send_message(message.chat.id, "Кожаный успешно потревожен")
+            break
     requests.put("http://127.0.0.1:8000/us", json=g)
 
-t.infinity_polling()
+if __name__ == "__main__":
+    t.infinity_polling()

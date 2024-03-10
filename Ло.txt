@@ -1,0 +1,32 @@
+2024-03-05 19:31:56,795 - root - INFO - Бот запущен
+2024-03-05 19:31:56,821 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-03-05 19:31:57,271 - urllib3.connectionpool - DEBUG - https://api.telegram.org:443 "GET /bot6585400874:AAF7WSV1B8jJvJHvRY0tPTceDE24mvyuOLU/getMe HTTP/1.1" 200 216
+2024-03-05 19:31:57,288 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-03-05 19:31:57,688 - urllib3.connectionpool - DEBUG - https://api.telegram.org:443 "GET /bot6585400874:AAF7WSV1B8jJvJHvRY0tPTceDE24mvyuOLU/getUpdates?offset=1&timeout=20 HTTP/1.1" 200 356
+2024-03-05 19:31:57,720 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-03-05 19:31:58,107 - urllib3.connectionpool - DEBUG - https://api.telegram.org:443 "POST /bot6585400874:AAF7WSV1B8jJvJHvRY0tPTceDE24mvyuOLU/sendMessage?chat_id=5738805521&text=%D0%9D%D0%BE%D0%B2%D0%B0%D1%8F+-+%D0%B4%D0%B0%D1%82%D1%8C+%D0%BD%D0%BE%D0%B2%D1%8B%D0%B9+%D0%BF%D1%80%D0%BE%D0%BC%D0%BF%D1%82%2C%2C+%D0%A1%D1%82%D0%B0%D1%80%D0%B0%D1%8F+-+%D0%BF%D1%80%D0%BE%D0%B4%D0%BE%D0%BB%D0%B6%D0%B8%D1%82%D1%8C+%D1%81%D1%82%D0%B0%D1%80%D1%8B%D0%B9+%D0%BF%D1%80%D0%BE%D0%BC%D0%BF%D1%82.+%D0%9F%D0%BE%D1%81%D0%BB%D0%B5+%D0%BA%D0%BD%D0%BE%D0%BF%D0%BA%D0%B8+%27%D0%9D%D0%BE%D0%B2%D0%B0%D1%8F%27+%D0%BF%D0%BE%D1%8F%D0%B2%D0%B8%D1%82%D1%81%D1%8F+%D0%B2%D1%8B%D0%B1%D0%BE%D1%80+%D0%BF%D1%80%D0%B5%D0%B4%D0%BC%D0%B5%D1%82%D0%B0%2C%2C+%D0%B0+%D0%B7%D0%B0%D1%82%D0%B5%D0%BC+%D1%81%D0%BB%D0%BE%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D0%B8%2C%2C+%D0%BD%D1%83+%D0%B8+%D0%B4%D0%B0%D0%BB%D1%8C%D1%88%D0%B5+%D0%B2%D0%B2%D0%BE%D0%B4%D0%B8&reply_markup=%7B%22keyboard%22%3A+%5B%5B%7B%22text%22%3A+%22%5Cu041d%5Cu043e%5Cu0432%5Cu0430%5Cu044f%22%7D%2C+%7B%22text%22%3A+%22%5Cu0421%5Cu0442%5Cu0430%5Cu0440%5Cu0430%5Cu044f%22%7D%5D%5D%2C+%22one_time_keyboard%22%3A+true%7D HTTP/1.1" 200 982
+2024-03-05 19:32:04,997 - urllib3.connectionpool - DEBUG - https://api.telegram.org:443 "GET /bot6585400874:AAF7WSV1B8jJvJHvRY0tPTceDE24mvyuOLU/getUpdates?offset=101425954&timeout=20 HTTP/1.1" 200 322
+2024-03-05 19:32:05,286 - urllib3.connectionpool - DEBUG - https://api.telegram.org:443 "POST /bot6585400874:AAF7WSV1B8jJvJHvRY0tPTceDE24mvyuOLU/sendMessage?chat_id=5738805521&text=%D0%92%D0%B2%D0%B5%D0%B4%D0%B8+%D0%BF%D1%80%D0%B5%D0%B4%D0%BC%D0%B5%D1%82&reply_markup=%7B%22keyboard%22%3A+%5B%5B%7B%22text%22%3A+%22%5Cu041c%5Cu0430%5Cu0442%5Cu0435%5Cu043c%5Cu0430%5Cu0442%5Cu0438%5Cu043a%5Cu0430%22%7D%2C+%7B%22text%22%3A+%22%5Cu0424%5Cu0438%5Cu0437%5Cu0438%5Cu043a%5Cu0430%22%7D%5D%5D%2C+%22one_time_keyboard%22%3A+true%7D HTTP/1.1" 200 338
+2024-03-05 19:32:18,067 - urllib3.connectionpool - DEBUG - https://api.telegram.org:443 "GET /bot6585400874:AAF7WSV1B8jJvJHvRY0tPTceDE24mvyuOLU/getUpdates?offset=101425955&timeout=20 HTTP/1.1" 200 352
+2024-03-05 19:32:18,094 - TeleBot - ERROR - Infinity polling exception: [Errno 2] No such file or directory: 'Дер.json'
+2024-03-05 19:32:18,107 - TeleBot - ERROR - Exception traceback:
+Traceback (most recent call last):
+  File "/home/gavniashka/Загрузки/AP/env/lib/python3.10/site-packages/telebot/__init__.py", line 1016, in infinity_polling
+    self.polling(non_stop=True, timeout=timeout, long_polling_timeout=long_polling_timeout,
+  File "/home/gavniashka/Загрузки/AP/env/lib/python3.10/site-packages/telebot/__init__.py", line 1104, in polling
+    self.__threaded_polling(non_stop=non_stop, interval=interval, timeout=timeout, long_polling_timeout=long_polling_timeout,
+  File "/home/gavniashka/Загрузки/AP/env/lib/python3.10/site-packages/telebot/__init__.py", line 1179, in __threaded_polling
+    raise e
+  File "/home/gavniashka/Загрузки/AP/env/lib/python3.10/site-packages/telebot/__init__.py", line 1141, in __threaded_polling
+    self.worker_pool.raise_exceptions()
+  File "/home/gavniashka/Загрузки/AP/env/lib/python3.10/site-packages/telebot/util.py", line 149, in raise_exceptions
+    raise self.exception_info
+  File "/home/gavniashka/Загрузки/AP/env/lib/python3.10/site-packages/telebot/util.py", line 92, in run
+    task(*args, **kwargs)
+  File "/home/gavniashka/Загрузки/НЕ/ВВ.py", line 63, in v
+    r = json.load(open("Дер.json","r"))
+FileNotFoundError: [Errno 2] No such file or directory: 'Дер.json'
+
+2024-03-05 19:32:21,123 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-03-05 19:32:21,463 - urllib3.connectionpool - DEBUG - https://api.telegram.org:443 "GET /bot6585400874:AAF7WSV1B8jJvJHvRY0tPTceDE24mvyuOLU/getUpdates?offset=101425956&timeout=20 HTTP/1.1" 409 143
+2024-03-05 19:32:41,465 - urllib3.connectionpool - DEBUG - https://api.telegram.org:443 "GET /bot6585400874:AAF7WSV1B8jJvJHvRY0tPTceDE24mvyuOLU/getUpdates?offset=101425956&timeout=20 HTTP/1.1" 200 23

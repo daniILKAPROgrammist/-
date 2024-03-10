@@ -14,6 +14,13 @@ class It(BaseModel):
     gam: bool 
     h: str
 
+class K(BaseModel):
+    passs: str
+    gm: str
+    tam: bool
+    gam: bool
+    h: list
+
 class H(BaseModel):
     num: str
     l: list
@@ -27,75 +34,137 @@ def h(id:str|None = None):
         return k
 
 @app.post("/us/")
-def g(url: str, t = False):
-    if not url:
-        print("Кожаный,, ты сдурел,, где юрл")
-        return
-    k = json.load(open("Резня.json","r"))
-    #k[id] = k[id].update(dict(url, t))
-    
-    #it = k[id].update(dict(url, t))
-    #k[id] = jsonable_encoder(it)
-    json.dump(k, open("Резня.json", "w"))
-    return k
+def g(r: Annotated[dict, Body()], id:str|None = None):
+    if id != None: 
+        if type(r) == dict:
+            k = json.load(open("Резня.json","r"))
+            if id in k:
+                k[id].update(r)
+                json.dump(k, open("Резня.json", "w"))
+                return r           
+            else:
+                raise HTTPException(status_code=404, detail="Неверно введён id", headers={"data":"Nothing"})
+        else:
+            raise HTTPException(status_code=400, detail="Нужен словарь", headers={"data":"Nothing"})
+    if id == None: 
+        if type(r) == dict:
+            json.dump(r, open("Резня.json", "w"))
+            return r
+        else:
+            raise HTTPException(status_code=400, detail="Нужен словарь", headers={"data":"Nothing"})
 
 @app.put("/us/")
 def t(r: Annotated[It | dict, Body()], id:str|None = None):  
-    if id != None and r is It:
-        if id in k:
+    if id != None: 
+        if type(r) == It:
             k = json.load(open("Резня.json","r"))
-            k[id] = r.model_dump()
-            json.dump(k, open("Резня.json", "w"))
-            return r           
+            if id in k:
+                k[id] = r.model_dump()
+                json.dump(k, open("Резня.json", "w"))
+                return r           
+            else:
+                raise HTTPException(status_code=404, detail="Неверно введён id", headers={"data":"Nothing"})
         else:
-            pass
-            #raise HTTPException(status_code=404, detail="Неверно введён id", headers="Ничего")
-    elif id == None and r is dict:
-        json.dump(r, open("Резня.json", "w"))
-        return r
-    elif id != None and r is not It:
-        pass
-        #raise HTTPException(status_code=402, detail="При запросе без id нужен словарь с данными всех пользователей пользователя", headers="Ничего")
-    elif id == None and r is not dict:
-        pass
-        #raise HTTPException(status_code=402, detail="При введении id нужен словарь с данными 1 пользователя", headers="Ничего")
+            raise HTTPException(status_code=400, detail="При введении id нужен словарь с данными 1 пользователя", headers={"data":"Nothing"})
+    if id == None: 
+        if type(r) == dict:
+            json.dump(r, open("Резня.json", "w"))
+            return r
+        else:
+            raise HTTPException(status_code=400, detail="При запросе без id нужен словарь с данными всех пользователей пользователя", headers={"data":"Nothing"})
 
 @app.delete("/us/")
-def t(url: str, t = False):
-    k = json.load(open("Резня.json","r"))
-    if url:
-        k[id]["url"] = None
-    if t:
-        k[id]["t"] = None
-    json.dump(k, open("Резня.json", "w"))
-    return k
+def t(r: Annotated[list | dict, Body()], id:str|None = None):
+    if id != None: 
+        if type(r) == list:
+            k = json.load(open("Резня.json","r"))
+            if id in k:
+                for i in r:
+                    if i in r:
+                        del k[id][i]
+                    else:
+                        raise HTTPException(status_code=404, detail="Указан отсутствующий в базе элемент", headers={"data":"Nothing"})
+                json.dump(k, open("Резня.json", "w"))
+                return r           
+            else:
+                raise HTTPException(status_code=404, detail="Неверно введён id", headers={"data":"Nothing"})
+        else:
+            raise HTTPException(status_code=400, detail="Нужен список", headers={"data":"Nothing"})
+    elif id == None: 
+        if type(r) == dict:
+            json.dump(r, open("Резня.json", "w"))
+            return r
+        else:
+            raise HTTPException(status_code=400, detail="Нужен словарь", headers={"data":"Nothing"})
 
 @app.get("/h/")
 def h(id:str|None = None):
     k = json.load(open("Аш.json","r"))
     if id != None:
-        return k[id]
+        return k["Кожаные"][id]
     else:
         return k
+    
+@app.post("/h/")
+def g(r: Annotated[dict, Body()], id:str|None = None):
+    if id != None: 
+        if type(r) == dict:
+            k = json.load(open("Аш.json","r"))
+            if id in k["Кожаные"]:
+                k["Кожаные"][id].update(r)
+                json.dump(k, open("Аш.json", "w"))
+                return r           
+            else:
+                raise HTTPException(status_code=404, detail="Неверно введён id", headers={"data":"Nothing"})
+        else:
+            raise HTTPException(status_code=400, detail="Нужен словарь", headers={"data":"Nothing"})
+    if id == None: 
+        if type(r) == dict:
+            json.dump(r, open("Аш.json", "w"))
+            return r
+        else:
+            raise HTTPException(status_code=400, detail="Нужен словарь", headers={"data":"Nothing"})
 
 @app.put("/h/")
 def h(h: Annotated[H | dict, Body()], id: str | None = None):
-    k = json.load(open("Аш.json","r"))
-    if id != None and h is H:
-        if id in k["Кожаные"]:
+    if id != None: 
+        if type(h) == H:
             k = json.load(open("Аш.json","r"))
-            k["Кожаные"][id] = h.model_dump() 
-            json.dump(k, open("Аш.json", "w"))
-            return h           
+            if id in k["Кожаные"]:
+                k["Кожаные"][id] = h.model_dump()
+                json.dump(k, open("Аш.json", "w"))
+                return h           
+            else:
+                raise HTTPException(status_code=404, detail="Неверно введён id", headers={"data":"Nothing"})
         else:
-            pass
-            #raise HTTPException(status_code=404, detail="Неверно введён id", headers="Ничего")
-    elif id == None and h is dict:
-        json.dump(h, open("Аш.json", "w"))
-        return h
-    elif id != None and h is not H:
-        pass
-        #raise HTTPException(status_code=402, detail="При введении id нужен словарь с данными 1 пользователя", headers="Ничего")
-    elif id == None and h is not dict:
-        pass
-        #raise HTTPException(status_code=402, detail="При запросе без id нужен словарь с данными всех пользователей пользователя", headers="Ничего")
+            raise HTTPException(status_code=400, detail="При введении id нужен словарь с данными 1 пользователя", headers={"data":"Nothing"})
+    if id == None: 
+        if type(h) == dict:
+            json.dump(h, open("Аш.json", "w"))
+            return h
+        else:
+            raise HTTPException(status_code=400, detail="При запросе без id нужен словарь с данными всех пользователей пользователя", headers={"data":"Nothing"})
+        
+@app.delete("/h/")
+def t(r: Annotated[list | dict, Body()], id:str|None = None):
+    if id != None: 
+        if type(r) == list:
+            k = json.load(open("Аш.json","r"))
+            if id in k["Кожаные"]:
+                for i in r:
+                    if i in r:
+                        del k["Кожаные"][id][i]
+                    else:
+                        raise HTTPException(status_code=404, detail="Указан отсутствующий в базе элемент", headers={"data":"Nothing"})
+                json.dump(k, open("Аш.json", "w"))
+                return r           
+            else:
+                raise HTTPException(status_code=404, detail="Неверно введён id", headers={"data":"Nothing"})
+        else:
+            raise HTTPException(status_code=400, detail="Нужен список", headers={"data":"Nothing"})
+    elif id == None: 
+        if type(r) == dict:
+            json.dump(r, open("Аш.json", "w"))
+            return r
+        else:
+            raise HTTPException(status_code=400, detail="Нужен словарь", headers={"data":"Nothing"})
