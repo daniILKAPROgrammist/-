@@ -10,9 +10,10 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
 from os import getenv
-#from dotenv import load_dotenv
+from dotenv import load_dotenv
 
-t = TeleBot("6370938616:AAGKNWr66eB3e36e7a2CI90LAQmXhpfGB-o")
+load_dotenv()
+t = TeleBot(getenv("t"))
 
 @t.message_handler(commands=["start"])
 def h(message):
@@ -50,9 +51,7 @@ def b(message):
             msg.attach(MIMEText(v, 'plain')) 
             server = smtplib.SMTP('smtp.gmail.com: 587')
             server.starttls()
-            #load_dotenv()
-            getenv("Gig")
-            server.login("terafirrmatebliceout@gmail.com", "ldtg mzmo ekvy vvnn".replace("\xa0", " "))
+            server.login("terafirrmatebliceout@gmail.com", getenv("Gig").replace("\xa0", " "))
             server.sendmail(g[r[str(message.from_user.id)]["gyg"]]["gm"], "terafirrmatebliceout@gmail.com", msg.as_string())
             server.quit()
             r[str(message.from_user.id)]["с"] = v
