@@ -13,6 +13,7 @@ class It(BaseModel):
     t: str | bool
     gam: bool 
     h: str
+    th: bool
 
 class K(BaseModel):
     passs: str

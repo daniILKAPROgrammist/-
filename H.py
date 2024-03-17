@@ -6,7 +6,6 @@ from time import sleep
 from threading import Thread
 import random
 from email.mime.multipart import MIMEMultipart
-#from email.mime.image import MIMEImage
 from email.mime.text import MIMEText
 import smtplib
 from os import getenv
@@ -19,7 +18,7 @@ t = TeleBot(getenv("t"))
 def h(message):
     r = json.load(open("Гавно.json","r"))
     if str(message.from_user.id) not in r:
-        r[str(message.from_user.id)] = {"v": 0, "gyg": "", "f":False, "c" : 0}
+        r[str(message.from_user.id)] = {"v": 0, "gyg": "", "f":False, "c" : 0, "b": ""}
     t.send_message(message.chat.id, "Введи имя пользователя и пароль через пробел")
     r[str(message.from_user.id)]["v"] = 1
     json.dump(r, open("Гавно.json", "w"))
@@ -39,31 +38,29 @@ def b(message):
     elif l[0] in g and g[l[0]]["gam"]:
         t.send_message(message.chat.id, "Похоже кто - то уже в аккаунте")
     elif l[0] in g and l[1] == g[l[0]]["passs"]:
-        if r[str(message.from_user.id)]["gyg"]:
-            g[r[str(message.from_user.id)]["gyg"]]["gam"] = False
-        r[str(message.from_user.id)]["gyg"] = l[0]
-        g[r[str(message.from_user.id)]["gyg"]]["gam"] = True
-        if g[r[str(message.from_user.id)]["gyg"]]["gm"]:
+        if g[str(l[0])]["gm"]:
             msg = MIMEMultipart()
             msg['Subject'] = "Код"
-            #msg.attach(MIMEImage(open("google.jpg").read()))
             v = str(random.randint(100000, 999999))
             msg.attach(MIMEText(v, 'plain')) 
             server = smtplib.SMTP('smtp.gmail.com: 587')
             server.starttls()
-            server.login("terafirrmatebliceout@gmail.com", getenv("Gig").replace("\xa0", " "))
-            server.sendmail(g[r[str(message.from_user.id)]["gyg"]]["gm"], "terafirrmatebliceout@gmail.com", msg.as_string())
+            server.login(getenv("gm"), getenv("Gig").replace("\xa0", " "))
+            server.sendmail(g[r[str(message.from_user.id)]["gyg"]]["gm"], getenv("gm"), msg.as_string())
             server.quit()
             r[str(message.from_user.id)]["с"] = v
             r[str(message.from_user.id)]["v"] = 2
+            r[str(message.from_user.id)]["b"] = l[0]
             t.send_message(message.chat.id, "Теперь введи код")
             t.register_next_step_handler(message, br)
         else:
+            if r[str(message.from_user.id)]["gyg"]:
+                g[r[str(message.from_user.id)]["gyg"]]["gam"] = False
+            r[str(message.from_user.id)]["gyg"] = l[0]
             g[r[str(message.from_user.id)]["gyg"]]["gam"] = True
             r[str(message.from_user.id)]["f"] = True
             t.send_message(message.chat.id, "Ты зашёл в аккаунт")
         json.dump(r, open("Гавно.json", "w"))
-        print(g)
         requests.put("http://127.0.0.1:8000/us", json=g)
     else:
         t.send_message(message.chat.id, "Неверное имя пользователя или пароль")
@@ -77,8 +74,13 @@ def br(message):
     r = json.load(open("Гавно.json","r"))
     g = requests.get("http://127.0.0.1:8000/us").json()
     if message.text == r[str(message.from_user.id)]["с"]:
+        if r[str(message.from_user.id)]["gyg"]:
+            g[r[str(message.from_user.id)]["gyg"]]["gam"] = False
+        r[str(message.from_user.id)]["gyg"] = r[str(message.from_user.id)]["b"]
         g[r[str(message.from_user.id)]["gyg"]]["gam"] = True
         r[str(message.from_user.id)]["f"] = True
+        r[str(message.from_user.id)]["с"] = 0
+        r[str(message.from_user.id)]["b"] = ""
         json.dump(r, open("Гавно.json", "w"))
         requests.put("http://127.0.0.1:8000/us", json=g)
         t.send_message(message.chat.id, "Ты зашёл в аккаунт")
@@ -113,23 +115,26 @@ def kh(message):
 def v(message):
     r = json.load(open("Гавно.json","r"))
     g = requests.get(f"http://127.0.0.1:8000/us/?id={r[str(message.from_user.id)]['gyg']}").json()
-    if "tam" not in g[r[str(message.from_user.id)]['gyg']]:
+    if "tam" not in g:
         mark = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
         bt = types.KeyboardButton("Ввести ссылку")
         bt1 = types.KeyboardButton("Добавить кожаного")
         mark.add(bt, bt1)
-        if g["url"] and g["h"]: 
-            bt1 = types.KeyboardButton("Ввести число часов")
-            bt2 = types.KeyboardButton("Отменить данные")
-            mark.add(bt1, bt2)   
+        if g["url"] and g["h"] and g["th"] == False: 
+            bt = types.KeyboardButton("Ввести количество часов")
+            mark.add(bt)
+        if g["url"]:   
+            bt1 = types.KeyboardButton("Отменить данные")
+            mark.add(bt1)   
         json.dump(r, open("Гавно.json", "w"))
-    elif "tam" in g[r[str(message.from_user.id)]['gyg']]:
+        t.send_message(message.chat.id, "Нажми на кнопку ввода ссылки,, после этого введи ссылку на проект,, а затем нажми на кнопку часов,, и введи количество часов,, через которое нужно потревожить кожаного - больше 0 и меньше 49. Кнопка для их ввода появится только после вводa ссылки,, а также ты не сможешь их ввести после её отправки. Ссылка отправляется после ввода часов. Кнопка отменить ссылку удаляет твою ссылку вместе с часами,, а также отменяет отправку ссылки.", reply_markup=mark)
+    elif "tam" in g:
         mark = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True, one_time_keyboard=True)
         bt = types.KeyboardButton("Список фанатов")
         bt1 = types.KeyboardButton("Список проектов")
         bt2 = types.KeyboardButton("Список кожаных")
         mark.add(bt, bt1, bt2)
-    t.send_message(message.chat.id, "Нажми на кнопку ввода ссылки,, после этого введи ссылку на проект,, а затем нажми на кнопку часов,, и введи количество часов,, через которое нужно потревожить кожаного - больше 0 и меньше 49. Кнопка для их ввода появится только после вводa ссылки. Кнопка отменить ссылку удаляет твою ссылку вместе с часами. Ссылка отправляется после ввода часов", reply_markup=mark)
+        t.send_message(message.chat.id, "Выбери функцию", reply_markup=mark)
     t.register_next_step_handler(message, k)
 
 @t.message_handler(type=["text"])
@@ -138,11 +143,11 @@ def k(message):
         if message.text == "Ввести ссылку":    
             t.send_message(message.from_user.id, "Вводи")           
             t.register_next_step_handler(message, fu)
-        if message.text == "Ввести число часов":    
+        if message.text == "Ввести количество часов":    
             t.send_message(message.from_user.id, "Вводи")
             t.register_next_step_handler(message, fu1)
         if message.text == "Отменить данные":    
-            t.send_message(message.from_user.id, "Вводи")
+            t.send_message(message.from_user.id, "Введи чё - та")
             t.register_next_step_handler(message, fu2)
         if message.text == "Список фанатов":    
             fu3(message)
@@ -176,6 +181,9 @@ def fu1(message):
     if "tam" in g[r[str(message.from_user.id)]['gyg']]:
         t.send_message(message.chat.id, "Стоять кавбой")
         return
+    if g[r[str(message.from_user.id)]["gyg"]]["th"] == True:
+        t.send_message(message.chat.id, "У тебя уже есть отправленная ссылка")
+        return
     if g[r[str(message.from_user.id)]['gyg']]["url"] and g[r[str(message.from_user.id)]['gyg']]["h"]:
         if message.text.isdigit() and int(message.text) > 0 and int(message.text) <= 48:
             g[r[str(message.from_user.id)]['gyg']]["t"] = (datetime.now() + timedelta(hours=int(message.text))).strftime("%Y-%m-%d %H:%M:%S")
@@ -183,8 +191,9 @@ def fu1(message):
                 g[g[r[str(message.from_user.id)]['gyg']]["h"]]["h"].append(g[r[str(message.from_user.id)]["gyg"]]["url"])
             else:
                 t.send_message(message.chat.id, "Последняя введённая ссылка была отпрвлена раннее")
-            requests.put(f"http://127.0.0.1:8000/us", json=g)
             t.send_message(message.chat.id, f"Через {message.text} часов я потревожу кожаного")
+            g[r[str(message.from_user.id)]["gyg"]]["th"] = True
+            requests.put(f"http://127.0.0.1:8000/us", json=g)
             th = Thread(target=le, args=(message,))
             th.start()        
         else:
@@ -201,6 +210,7 @@ def fu2(message):
         return
     g["t"] = False
     g["url"] = ""
+    g["th"] = False
     requests.put(f"http://127.0.0.1:8000/us/?id={r[str(message.from_user.id)]['gyg']}", json=g)
     t.send_message(message.chat.id, "Ссылка и часы сброшены")
     json.dump(r, open("Гавно.json", "w"))
@@ -243,7 +253,7 @@ def fu6(message):
     json.dump(r, open("Гавно.json", "w"))
     u = list()
     for k in h["Кожаные"]:
-        u.append(f"{k}." + h["Кожаные"][k]["nam"])
+        u.append(f"{k}. " + h["Кожаные"][k]["nam"])
     t.send_message(message.chat.id, "Тут можно выбрать желаемого кожаного для твоих сдач. Вот список из них. Введи № желаемого")
     t.send_message(message.chat.id, "\n".join(u))
     t.register_next_step_handler(message, j)
@@ -276,15 +286,19 @@ def le(message):
         return
     while True:
         f = datetime.strptime(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S")
+        g = requests.get("http://127.0.0.1:8000/us").json()
+        if g[r[str(message.from_user.id)]["gyg"]]["th"] == False:
+            return
         if f < u:
             sleep(5)
+            print("j")
         else:    
             for y in r:
                 if r[y]["gyg"] == g[r[str(message.from_user.id)]["gyg"]]["h"]:
                     t.send_message(y, "Кожаный,, ты потревожен. Новый url - " + g[r[str(message.from_user.id)]["gyg"]]["url"])
-                    break                    
+                    break 
+            g[r[str(message.from_user.id)]["gyg"]]["th"] = False              
             g[r[str(message.from_user.id)]["gyg"]]["url"] = ""
-            g[r[str(message.from_user.id)]["gyg"]]["t"] = False
             t.send_message(message.chat.id, "Кожаный успешно потревожен")
             break
     requests.put("http://127.0.0.1:8000/us", json=g)
